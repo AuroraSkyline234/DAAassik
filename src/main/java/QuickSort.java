@@ -45,7 +45,6 @@ public class QuickSort {
                 sort(a, gt + 1, hi, depth + 1, metrics);
                 hi = lt - 1;
             }
-            depth++;
         }
     }
 
