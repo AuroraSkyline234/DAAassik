@@ -1,45 +1,32 @@
-# Design and Analysis of Algorithms - Assignment 1
-**Student:** Islam Bolat
-**Group:** SE-2521
+# Assignment 1 - Design and Analysis of Algorithms
+Islam Bolat
+Group: SE-2521
 
 ## 1. Asymptotic Bounds
+MergeSort: Best, average and worst cases are all O(n log n). The algorithm always divides the array in half and takes O(n) to merge, so the time is always the same regardless of the input.
 
-| Algorithm | Best Case | Average Case | Worst Case | Reason (One-line explanation) |
-| :--- | :--- | :--- | :--- | :--- |
-| **MergeSort** | $\Theta(n \log n)$ | $\Theta(n \log n)$ | $\mathcal{O}(n \log n)$ | Always divides the array exactly in half and takes $\Theta(n)$ to merge, regardless of input. |
-| **QuickSort** | $\Omega(n)$ | $\Theta(n \log n)$ | $\mathcal{O}(n^2)$ | Best: All elements equal (3-way partition handles in linear time). Avg: Random pivot gives balanced splits. Worst: Unlucky pivots (e.g., max/min chosen every time). |
-| **QuickSelect** | $\Omega(n)$ | $\Theta(n)$ | $\mathcal{O}(n^2)$ | Best: Pivot is the k-th element or all equal. Avg: Random pivot discards a fraction of the array. Worst: Unlucky pivots reduce size by 1. |
-| **Insertion Sort**| $\Omega(n)$ | $\Theta(n^2)$ | $\mathcal{O}(n^2)$ | Best: Array is already sorted (only 1 comparison per element). Worst: Reverse sorted array. |
+QuickSort: Average and best cases are O(n log n) because of the random pivot. Worst case is O(n^2) if the pivot is really bad, but 3-way partition helps to completely avoid this on arrays with duplicates.
+
+QuickSelect: Best and average is O(n). It only goes into one half of the array, so it drops half the work every time. Worst case is O(n^2).
+
+Insertion Sort: Best case is O(n) for already sorted arrays. Worst and average is O(n^2) because of nested loops.
 
 ## 2. Recurrences and Master Theorem
+For MergeSort, the recurrence is T(n) = 2T(n/2) + O(n). Here a=2, b=2, and f(n) = O(n). Since n^(log_2(2)) = n^1, it matches Case 2 of the Master Theorem. So the result is O(n log n).
 
-### MergeSort
-*   **Recurrence:** $T(n) = 2T(n/2) + \Theta(n)$
-*   **Parameters:** $a = 2$, $b = 2$, $f(n) = \Theta(n)$
-*   **Master Theorem Case:** $n^{\log_b a} = n^{\log_2 2} = n^1$. Since $f(n) = \Theta(n^{\log_b a})$, this is **Case 2**.
-*   **Result:** $T(n) = \Theta(n \log n)$
+For QuickSort, assuming an average balanced split, it is the same as MergeSort: T(n) = 2T(n/2) + O(n). So it also gives O(n log n) by Case 2.
 
-### QuickSort (Assuming balanced split)
-*   **Recurrence:** $T(n) = 2T(n/2) + \Theta(n)$
-*   **Parameters:** $a = 2$, $b = 2$, $f(n) = \Theta(n)$
-*   **Master Theorem Case:** **Case 2**, yielding $T(n) = \Theta(n \log n)$.
-*   **Random Pivot Explanation:** While the worst-case split is $T(n) = T(n-1) + \Theta(n)$, a random pivot ensures that on average, the array is divided into proportional constant fractions (e.g., $1/4$ and $3/4$). This keeps the recursion tree depth bounded to $\mathcal{O}(\log n)$, and with $\mathcal{O}(n)$ work per level, the average expected running time remains $\mathcal{O}(n \log n)$.
-
-### QuickSelect (Assuming balanced split)
-*   **Recurrence:** $T(n) = 1T(n/2) + \Theta(n)$ (since we only recurse into one half)
-*   **Parameters:** $a = 1$, $b = 2$, $f(n) = \Theta(n)$
-*   **Master Theorem Case:** $n^{\log_b a} = n^{\log_2 1} = n^0 = 1$. Since $f(n) = \Omega(n^{\log_b a + \epsilon})$ for $\epsilon = 1$, and the regularity condition holds ($a \cdot f(n/b) \le c \cdot f(n) \Rightarrow 1 \cdot (n/2) \le c \cdot n$ for $c=1/2 < 1$), this is **Case 3**.
-*   **Result:** $T(n) = \Theta(n)$
+For QuickSelect, the recurrence is T(n) = T(n/2) + O(n) because we only recurse on one side. Here a=1, b=2, and f(n)=O(n). Since n^(log_2(1)) = n^0 = 1, this falls into Case 3 of the Master Theorem, which gives O(n).
 
 ## 3. Plots and Ratio Check
 
+![Time vs n](time_plot.png)
 
-*   `![Time vs n](time_plot.png)`
-*   `![Max recursion depth vs n]()`
-*   `![Ratio vs n](ratio_plot.png)`
+![Max recursion depth vs n](depth_plot.png)
 
-**Ratio Check ($\Theta$ definition):**
-According to the plots, the ratio of operations to expected growth becomes almost constant as $n$ grows. For large $n \ge n_0$ (where $n_0 \approx 10000$), the curve stabilizes between a lower bound $c_1 \approx 0.3$ and an upper bound $c_2 \approx 6.5$ (with sorting algorithms tightly bounded below $2.0$). This confirms the formal definition of Big-Theta: $c_1 \cdot g(n) \le f(n) \le c_2 \cdot g(n)$ for all $n \ge n_0$.
+![Ratio vs n](ratio_plot.png)
+
+If you look at the Ratio vs n plot, you can see that the lines become almost flat after n = 10000. For sorting algorithms, the ratio stays between 0.3 and 2.0. This proves the Big-Theta definition because c1 * g(n) <= f(n) <= c2 * g(n) for n >= n0. Here n0 is around 10000, c1 is 0.3 and c2 is 2.0.
 
 ## 4. Discussion
-Overall, the empirical measurements closely match the theoretical asymptotic bounds. QuickSort demonstrated $\mathcal{O}(n \log n)$ behavior across all inputs, avoiding $\mathcal{O}(n^2)$ on arrays with duplicates thanks to the 3-way partitioning scheme. Minor deviations in execution time for smaller $n$ can be attributed to JVM warm-up and JIT compilation, though taking the median of 5 runs heavily mitigated this. Memory churn and Garbage Collector pauses were minimized in MergeSort by using a single, reusable auxiliary array instead of allocating memory at each recursive step. Additionally, the CPU cache utilization was highly efficient, and the 15-element cutoff for Insertion Sort noticeably reduced the recursion overhead for base cases, exploiting Insertion Sort's fast execution on small datasets.
+The results from the benchmarks match the theoretical bounds perfectly. QuickSort was the fastest and didn't hit O(n^2) on the duplicates array because the 3-way partition handled it, keeping the recursion depth very low (around 6). QuickSelect was much faster than all sorting algorithms since it has O(n) complexity. Also, switching to Insertion Sort for arrays smaller than 15 elements and creating the aux array only once in MergeSort helped to optimize the memory and time during the tests.
